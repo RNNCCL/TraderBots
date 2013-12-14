@@ -10,12 +10,10 @@
 		public static $fee=0.002;
 		public static $btc_limit=0.01;
 		
+		public $btc_info;
+		public $account_info;
 		public $transactions;
-		public $price;
-		public $buys;
-		public $sells;
-		public $usd_ammont;
-		public $btc_ammount;
+		public $orders;
 		
 		private $api;
 		
@@ -30,9 +28,8 @@
 			}
 
 			$this->refresh();
-			
-			$this->btc_ammount=$this->check_btc_ammount();
-			if ($this->btc_ammount)
+
+			if ($this->account_info['funds']['btc'])
 			{
 				$this->create_sells();
 			}
@@ -50,12 +47,10 @@
 		
 		public function refresh()
 		{
-			$this->transactions=$this->check_transactions();
-			$this->price=$this->check_price();
-			$this->buys=$this->check_buys();
-			$this->sells=$this->check_sells();
-			$this->usd_ammont=$this->check_usd_ammount();
-			$this->btc_ammount=$this->check_btc_ammount();
+			$this->btc_info=$this->get_btc_info();
+			$this->account_info=$this->get_account_info();
+			$this->transactions=$this->get_transactions();
+			$this->orders=$this->get_orders();
 			
 			return;
 		}
@@ -75,14 +70,28 @@
 			return;
 		}
 		
-		public function check_btc_ammount()
+		public function get_btc_info()
 		{
-			return;
+			$results=$this->api->getPairTicker('btc_usd');
+			return $results['ticker'];
 		}
 		
-		public function check_transactions()
+		public function get_account_info()
 		{
-			return;
+			$results=$this->api->apiQuery('getInfo');
+			return $results['return'];
+		}
+		
+		public function get_transactions()
+		{
+			$results=$this->api->apiQuery('TradeHistory');
+			return $results['return'];
+		}
+		
+		public function get_orders()
+		{
+			$results=$this->api->apiQuery('ActiveOrders');
+			return $results['return'];
 		}
 		
 		public function create_sells()
@@ -91,8 +100,8 @@
 			{
 				$this->create_sell();
 
-				$this->btc_ammount=$this->check_btc_ammount();
-				if (!$this->btc_ammount)
+				$this->account_info=$this->get_account_info();
+				if (!$this->account_info['funds']['btc'])
 				{
 					break;
 				}
@@ -101,37 +110,17 @@
 			return;
 		}
 		
-		public function check_sells()
-		{
-			
-		}
-		
 		public function create_sell()
-		{
-			return;
-		}
-		
-		public function check_price()
-		{
-			return;
-		}
-		
-		public function check_buys()
 		{
 			return;
 		}
 		
 		public function check_bump()
 		{
-			
-		}
-		
-		public function destroy_buys()
-		{
 			return;
 		}
 		
-		public function check_usd_ammount()
+		public function destroy_buys()
 		{
 			return;
 		}
