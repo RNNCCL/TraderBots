@@ -3,7 +3,7 @@
 
 	class BtcBot
 	{
-		public static $min=0;
+		public static $min=1;
 		public static $max=1000;
 		public static $usd_threshold=10;
 		public static $btc_threshold=0.0001;
@@ -112,8 +112,9 @@
 			return;
 		}
 		
-		public function create_sell()
+		public function create_sell($amount, $price)
 		{
+			$this->api->makeOrder($amount, 'btc_usd', 'sell', $price);
 			return;
 		}
 		
@@ -134,7 +135,7 @@
 			{
 				return true;
 			}
-			return true;
+			return false;
 		}
 		
 		public function destroy_buys()
@@ -154,11 +155,24 @@
 		
 		public function create_buys()
 		{
+			$this->refresh();
+			$price=(floor($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold)-static::$usd_threshold;
+
+			for ($usd=$this->account_info['funds']['usd']; $usd>static::$usd_threshold && $price>static::$min; $price-=static::$usd_threshold)
+			{
+				$this->account_info=$this->get_account_info();
+				$this->btc_info=$this->get_btc_info();
+				
+				$amount=($usd/2)/$price;
+				$this->create_buy($amount, $price);
+			}
+			
 			return;
 		}
 		
-		public function create_buy()
+		public function create_buy($amount, $price)
 		{
+			$this->api->makeOrder($amount, 'btc_usd', 'buy', $price);
 			return;
 		}
 	}
