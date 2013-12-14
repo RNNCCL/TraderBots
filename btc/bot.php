@@ -96,6 +96,8 @@
 		
 		public function create_sells()
 		{
+			$this->refresh();
+			
 			foreach ($this->tranactions as $transaction)
 			{
 				$this->create_sell();
@@ -117,7 +119,22 @@
 		
 		public function check_bump()
 		{
-			return;
+			$this->refresh();
+			$cheapest=static::$max;
+			
+			foreach ($this->orders as $order)
+			{
+				if ($order['pair']=='btc_usd' && $order['type']=='sell' && $order['rate']<$cheapest)
+				{
+					$cheapest=$order['rate'];
+				}
+			}
+			
+			if (($cheapest+(static::$usd_threshold*2))<$this->btc_info['sell'])
+			{
+				return true;
+			}
+			return false;
 		}
 		
 		public function destroy_buys()
