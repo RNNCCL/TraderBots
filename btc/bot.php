@@ -120,25 +120,35 @@
 		public function check_bump()
 		{
 			$this->refresh();
-			$cheapest=static::$max;
+			$largest=static::$min;
 			
 			foreach ($this->orders as $order)
 			{
-				if ($order['pair']=='btc_usd' && $order['type']=='sell' && $order['rate']<$cheapest)
+				if ($order['pair']=='btc_usd' && $order['type']=='buy' && $order['rate']>$largest)
 				{
-					$cheapest=$order['rate'];
+					$largest=$order['rate'];
 				}
 			}
 			
-			if (($cheapest+(static::$usd_threshold*2))<$this->btc_info['sell'])
+			if (($largest+(static::$usd_threshold*2))<$this->btc_info['sell'])
 			{
 				return true;
 			}
-			return false;
+			return true;
 		}
 		
 		public function destroy_buys()
 		{
+			$this->refresh();
+			
+			foreach ($this->orders as $order_id=>$order)
+			{
+				if ($order['pair']=='btc_usd' && $order['type']=='buy')
+				{
+					$this->api->apiQuery('CancelOrder', array('order_id'=>$order_id));
+				}
+			}
+			
 			return;
 		}
 		
