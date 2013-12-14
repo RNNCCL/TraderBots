@@ -3,12 +3,12 @@
 
 	class BtcBot
 	{
-		public static $min;
-		public static $max;
-		public static $usd_threshold;
-		public static $btc_threshold;
-		public static $fee;
-		public static $btc_limit;
+		public static $min=0;
+		public static $max=1000;
+		public static $usd_threshold=10;
+		public static $btc_threshold=0.0001;
+		public static $fee=0.002;
+		public static $btc_limit=0.01;
 		
 		public $transactions;
 		public $price;
@@ -19,22 +19,16 @@
 		
 		private $api;
 		
-		public function __construct()
+		public function __construct($api_key, $api_secret)
 		{
-			$this->min=0;
-			$this->max=1000;
-			$this->usd_threshold=10;
-			$this->btc_threshold=0.0001;
-			$this->fee=0.2/100;
-			$this->btc_limit=0.01;
-			
-			$this->api=$this->login('login');
+			$this->login($api_key, $api_secret);
+			unset($api_key, $api_secret);
 			if (!$this->api)
 			{
-				email_alert();
+				$this->email_alert('login');
 				return;
 			}
-			
+
 			$this->refresh();
 			
 			$this->btc_ammount=$this->check_btc_ammount();
@@ -66,15 +60,18 @@
 			return;
 		}
 		
-		public function login($where)
+		public function login($api_key, $api_secret)
 		{
-			mail(EMAIL, 'BTC Bot Fail', 'on: '.$where);
+			$this->api=new BTCeAPI($api_key, $api_secret);
+			unset($api_key, $api_secret);
 			
 			return;
 		}
 		
-		public function email_alert()
+		public function email_alert($where)
 		{
+			@mail(EMAIL, 'BTC Bot Fail', 'on: '.$where);
+			
 			return;
 		}
 		

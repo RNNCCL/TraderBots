@@ -1,4 +1,5 @@
 <?php
-	const EMAIL='my.email@gmail.com';
-	const API_KEY='398hfw9gyt3tobh97sdg9hs';
+	const EMAIL			= 'my.email@gmail.com';
+	const API_KEY		= 'SLOTJJKM-AGIK2ETC-22Y257HU-0UYVY8C2-2U2YM2JK';
+	const API_SECRET	= '5d366a6e878f3375848c9d78e48457c6ad121022fa40ac9e54dd3d7c6c8819b5';
 ?>
