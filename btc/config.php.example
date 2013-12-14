@@ -1,0 +1,4 @@
+<?php
+	const EMAIL='my.email@gmail.com';
+	const API_KEY='398hfw9gyt3tobh97sdg9hs';
+?>
