@@ -164,7 +164,13 @@
 				$this->btc_info=$this->get_btc_info();
 				
 				$amount=($usd/2)/$price;
+				if (!($amount>=static::$btc_limit))
+				{
+					$amount=$usd/$price;
+				}
 				$this->create_buy($amount, $price);
+				
+				$usd/=2;
 			}
 			
 			return;
@@ -172,7 +178,9 @@
 		
 		public function create_buy($amount, $price)
 		{
+			$amount=floor($amount/static::$btc_threshold)*static::$btc_threshold;
 			$this->api->makeOrder($amount, 'btc_usd', 'buy', $price);
+			
 			return;
 		}
 	}
