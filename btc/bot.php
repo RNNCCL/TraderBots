@@ -97,16 +97,22 @@
 		public function create_sells()
 		{
 			$this->refresh();
-			
-			foreach ($this->tranactions as $transaction)
-			{
-				$this->create_sell();
+			$btc_amount=$this->account_info['funds']['btc'];
 
-				$this->account_info=$this->get_account_info();
+			foreach ($this->transactions as $transaction)
+			{
 				if (!$this->account_info['funds']['btc'])
 				{
 					break;
 				}
+				
+				if ($transaction['pair']=='btc_usd' && $transaction['type']=='buy')
+				{
+					$amount=$transaction['amount']-($transaction['amount']*static::$fee);
+					$this->create_sell($amount, $transaction['rate']+static::$usd_threshold);
+				}
+
+				$this->account_info=$this->get_account_info();
 			}
 			
 			return;
