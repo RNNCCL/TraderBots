@@ -133,6 +133,7 @@
 		
 		public function create_sell($amount, $price)
 		{
+			$amount=floor($amount/static::$btc_threshold)*static::$btc_threshold;
 			return $this->api->makeOrder($amount, 'btc_usd', 'sell', $price);
 		}
 		
