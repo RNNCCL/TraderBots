@@ -101,7 +101,7 @@ class BTCeAPI {
                 $this->noonce = $matches[1];
                 return $this->apiQuery($method, $req);
             } else {
-                throw new BTCeAPIErrorException('API Error Message: '.$result['error'].". Response: ".print_r($result, true));
+                //throw new BTCeAPIErrorException('API Error Message: '.$result['error'].". Response: ".print_r($result, true));
             }
         }
         // Cool -> Return

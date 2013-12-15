@@ -91,7 +91,11 @@
 		public function get_orders()
 		{
 			$results=$this->api->apiQuery('ActiveOrders');
-			return $results['return'];
+			if (isset($results['return']))
+			{
+				return $results['return'];
+			}
+			return false;
 		}
 		
 		public function create_sells()
@@ -166,9 +170,6 @@
 
 			for ($usd=$this->account_info['funds']['usd']; $usd>static::$usd_threshold && $price>static::$min; $price-=static::$usd_threshold)
 			{
-				$this->account_info=$this->get_account_info();
-				$this->btc_info=$this->get_btc_info();
-				
 				$amount=($usd/2)/$price;
 				if (!($amount>=static::$btc_limit))
 				{
