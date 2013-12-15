@@ -117,7 +117,12 @@
 				if ($transaction['pair']=='btc_usd' && $transaction['type']=='buy')
 				{
 					$amount=$transaction['amount']-($transaction['amount']*static::$fee);
-					$this->create_sell($amount, $transaction['rate']+static::$usd_threshold);
+					$result=$this->create_sell($amount, $transaction['rate']+static::$usd_threshold);
+					
+					if (!$result['success'])
+					{
+						break;
+					}
 				}
 
 				$this->account_info=$this->get_account_info();
@@ -128,8 +133,7 @@
 		
 		public function create_sell($amount, $price)
 		{
-			$this->api->makeOrder($amount, 'btc_usd', 'sell', $price);
-			return;
+			return $this->api->makeOrder($amount, 'btc_usd', 'sell', $price);
 		}
 		
 		public function check_bump()
@@ -186,7 +190,12 @@
 				{
 					$amount=$usd/$price;
 				}
-				$this->create_buy($amount, $price);
+				$result=$this->create_buy($amount, $price);
+				
+				if (!$result['success'])
+				{
+					break;
+				}
 				
 				$usd/=2;
 			}
@@ -197,9 +206,7 @@
 		public function create_buy($amount, $price)
 		{
 			$amount=floor($amount/static::$btc_threshold)*static::$btc_threshold;
-			$this->api->makeOrder($amount, 'btc_usd', 'buy', $price);
-			
-			return;
+			return $this->api->makeOrder($amount, 'btc_usd', 'buy', $price);
 		}
 	}
 ?>
