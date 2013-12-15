@@ -1,12 +1,16 @@
 <?php
 	require_once('api.php');
+	
+	//TODO: Add exposure rating. +1 for each order.
+	//TODO: Add in freeze reset. Destroy and sell all sell orders when exposure is frozen.
+	//TODO: I may have some BTC fractions left over. Account for them in create_sells.
 
 	class BtcBot
 	{
 		public static $min=1;
 		public static $max=1000;
 		public static $usd_threshold=10;
-		public static $btc_threshold=0.0001;
+		public static $btc_threshold=0.00000001;
 		public static $fee=0.002;
 		public static $btc_limit=0.01;
 		
@@ -133,15 +137,19 @@
 			$this->refresh();
 			$largest=static::$min;
 			
-			foreach ($this->orders as $order)
+			if ($this->orders)
 			{
-				if ($order['pair']=='btc_usd' && $order['type']=='buy' && $order['rate']>$largest)
+				foreach ($this->orders as $order)
 				{
-					$largest=$order['rate'];
+					if ($order['pair']=='btc_usd' && $order['type']=='buy' && $order['rate']>$largest)
+					{
+						$largest=$order['rate'];
+					}
 				}
 			}
 			
-			if (($largest+(static::$usd_threshold*2))<$this->btc_info['sell'])
+			$price=round($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold;
+			if (($largest+static::$usd_threshold)<$price)
 			{
 				return true;
 			}
@@ -152,11 +160,14 @@
 		{
 			$this->refresh();
 			
-			foreach ($this->orders as $order_id=>$order)
+			if ($this->orders)
 			{
-				if ($order['pair']=='btc_usd' && $order['type']=='buy')
+				foreach ($this->orders as $order_id=>$order)
 				{
-					$this->api->apiQuery('CancelOrder', array('order_id'=>$order_id));
+					if ($order['pair']=='btc_usd' && $order['type']=='buy')
+					{
+						$this->api->apiQuery('CancelOrder', array('order_id'=>$order_id));
+					}
 				}
 			}
 			
@@ -166,7 +177,7 @@
 		public function create_buys()
 		{
 			$this->refresh();
-			$price=(floor($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold)-static::$usd_threshold;
+			$price=(round($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold)-static::$usd_threshold;
 
 			for ($usd=$this->account_info['funds']['usd']; $usd>static::$usd_threshold && $price>static::$min; $price-=static::$usd_threshold)
 			{
