@@ -228,7 +228,7 @@
 				
 				$usd/=2;
 			}
-			var_dump($this->exposure);
+
 			return;
 		}
 		
