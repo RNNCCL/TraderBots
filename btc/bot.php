@@ -9,7 +9,7 @@
 	{
 		public static $min=1;
 		public static $max=1000;
-		public static $usd_threshold=25;
+		public static $usd_threshold=10;
 		public static $btc_threshold=0.00000001;
 		public static $fee=0.002;
 		public static $btc_limit=0.01;
@@ -21,6 +21,7 @@
 		
 		public $spread;
 		public $exposure;
+		public $difference;
 		
 		private $api;
 		
@@ -189,8 +190,29 @@
 		{
 			$this->refresh();
 			$price=(round($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold)-static::$usd_threshold;
-
+			
+			$this->exposure=0;
 			for ($usd=$this->account_info['funds']['usd']; $price>static::$min; $price-=static::$usd_threshold)
+			{
+				$this->exposure++;
+				
+				$amount=($usd/2)/$price;
+				if (!($amount>=static::$btc_limit))
+				{
+					break;
+				}
+				
+				$usd/=2;
+			}
+			
+			$this->difference=floor($this->spread/$this->exposure);
+			if ($this->difference<static::$usd_threshold)
+			{
+				$this->difference=static::$usd_threshold;
+			}
+
+			$price=(round($this->btc_info['sell']/$this->difference)*$this->difference)-$this->difference;
+			for ($usd=$this->account_info['funds']['usd']; $price>static::$min; $price-=$this->difference)
 			{
 				$amount=($usd/2)/$price;
 				if (!($amount>=static::$btc_limit))
@@ -206,7 +228,7 @@
 				
 				$usd/=2;
 			}
-			
+			var_dump($this->exposure);
 			return;
 		}
 		
