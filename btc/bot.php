@@ -1,10 +1,14 @@
 <?php
 	require_once('api.php');
 	
-	//TODO: Add exposure rating. +1 for each order.
 	//TODO: Add in freeze reset. Destroy and sell all sell orders when exposure is frozen.
 	//TODO: I may have some BTC fractions left over. Account for them in create_sells.
-
+	//TODO: Find a way to keep refreshing buys, based on if difference keeps changing.
+	//TODO: Split exposure in to it's own function.
+	//TODO: Split spread in to it's own function and on refresh.
+	//TODO: Split difference.
+	//TODO: Check check_bump and make sure it auto follows with new threshold.
+	
 	class BtcBot
 	{
 		public static $min=1;
