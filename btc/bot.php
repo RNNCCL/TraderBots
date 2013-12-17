@@ -19,6 +19,9 @@
 		public $transactions;
 		public $orders;
 		
+		public $spread;
+		public $exposure;
+		
 		private $api;
 		
 		public function __construct($api_key, $api_secret)
@@ -77,6 +80,9 @@
 		public function get_btc_info()
 		{
 			$results=$this->api->getPairTicker('btc_usd');
+
+			$this->spread=$results['ticker']['high']-$results['ticker']['low'];
+			
 			return $results['ticker'];
 		}
 		
