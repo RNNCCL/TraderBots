@@ -9,7 +9,7 @@
 	{
 		public static $min=1;
 		public static $max=1000;
-		public static $usd_threshold=10;
+		public static $usd_threshold=25;
 		public static $btc_threshold=0.00000001;
 		public static $fee=0.002;
 		public static $btc_limit=0.01;
@@ -184,7 +184,7 @@
 			$this->refresh();
 			$price=(round($this->btc_info['sell']/static::$usd_threshold)*static::$usd_threshold)-static::$usd_threshold;
 
-			for ($usd=$this->account_info['funds']['usd']; $usd>static::$usd_threshold && $price>static::$min; $price-=static::$usd_threshold)
+			for ($usd=$this->account_info['funds']['usd']; $price>static::$min; $price-=static::$usd_threshold)
 			{
 				$amount=($usd/2)/$price;
 				if (!($amount>=static::$btc_limit))
